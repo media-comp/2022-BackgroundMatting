@@ -13,13 +13,16 @@ from torchvision import transforms as T
 from torchvision.transforms.functional import to_pil_image
 from models.model import WholeNet
 
-def main(src_path, bck_path, pretrained_model, output_path, output_type):
+import hydra
+
+@hydra.main(config_path="configs", config_name="test_image.yaml")
+def main(config):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print("device : "+str(device))
 
     #prepare dataset
-    image_rgb_data = ImageDataset(src_path,"RGB") #source data
-    image_bck_data = ImageDataset(bck_path,"RGB")#,transforms=T.RandomRotation(degrees=(180,180))) #background data
+    image_rgb_data = ImageDataset(config["src_path"],"RGB") #source data
+    image_bck_data = ImageDataset(config["bck_path"],"RGB")#,transforms=T.RandomRotation(degrees=(180,180))) #background data
     image_rgb_bck = ConcatImgBck(image_rgb_data, image_bck_data, transforms=A.PairCompose([A.PairApply(nn.Identity()), A.PairApply(T.ToTensor())]))
 
     test_dataset = DataLoader(image_rgb_bck, batch_size=1, pin_memory=True)
@@ -29,7 +32,7 @@ def main(src_path, bck_path, pretrained_model, output_path, output_type):
     model.eval()
 
     #load pretrained model
-    pretrained_state_dict = torch.load(pretrained_model)
+    pretrained_state_dict = torch.load(config["pretrained_model"],map_location='cuda:0')
     matched , total = 0, 0
     original_state_dict = model.state_dict()
     for key in original_state_dict.keys():
@@ -41,9 +44,9 @@ def main(src_path, bck_path, pretrained_model, output_path, output_type):
     print(f'Loaded pretrained state_dict: {matched}/{total} matched')
 
     #prepare output directory
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-        print("created output dir : "+output_path)
+    if not os.path.exists(config["output_path"]):
+        os.makedirs(config["output_path"])
+        print("created output dir : "+config["output_path"])
     print("========start inference=========")
     #Timer
     times = []
@@ -54,7 +57,7 @@ def main(src_path, bck_path, pretrained_model, output_path, output_type):
             bck = bck.to(device)
 
             filename = image_rgb_bck.img_dataset.filenames[i]
-            filename = os.path.relpath(filename, args.src_path)
+            filename = os.path.relpath(filename, config["src_path"])
             filename = os.path.splitext(filename)[0]
             
             #start timer
@@ -66,31 +69,31 @@ def main(src_path, bck_path, pretrained_model, output_path, output_type):
             print(f'Matting time: {toc-tic} sec')
             times.append(toc-tic)
             
-            if 'com' in output_type:
+            if 'com' in config["output_type"]:
                 com = torch.cat([fgr * alp.ne(0), alp], dim=1)
-                filepath = os.path.join(output_path, filename + '_com.png')
+                filepath = os.path.join(config["output_path"], filename + '_com.png')
                 com = to_pil_image(com[0])
                 com.save(filepath)
                 print("saved "+filepath)
-            if 'alp' in output_type:
-                filepath = os.path.join(output_path, filename + '_alp.jpg')
+            if 'alp' in config["output_type"]:
+                filepath = os.path.join(config["output_path"], filename + '_alp.jpg')
                 alp = to_pil_image(alp[0])
                 alp.save(filepath)
                 print("saved "+filepath)
-            if 'fgr' in output_type:
-                filepath = os.path.join(output_path, filename + '_fgr.jpg')
+            if 'fgr' in config["output_type"]:
+                filepath = os.path.join(config["output_path"], filename + '_fgr.jpg')
                 fgr = to_pil_image(fgr[0])
                 fgr.save(filepath)
                 print("saved "+filepath)
-            if 'err' in output_type:
+            if 'err' in config["output_type"]:
                 err = F.interpolate(err, src.shape[2:], mode='bilinear', align_corners=False)
-                filepath = os.path.join(output_path, filename + '_err.jpg')
+                filepath = os.path.join(config["output_path"], filename + '_err.jpg')
                 err = to_pil_image(err[0])
                 err.save(filepath)
                 print("saved "+filepath)
-            if 'ref' in output_type:
+            if 'ref' in config["output_type"]:
                 ref = F.interpolate(ref, src.shape[2:], mode='nearest')
-                filepath = os.path.join(output_path, filename + '_ref.jpg')
+                filepath = os.path.join(config["output_path"], filename + '_ref.jpg')
                 ref = to_pil_image(ref[0])
                 ref.save(filepath)
                 print("saved "+filepath)
@@ -101,15 +104,4 @@ def main(src_path, bck_path, pretrained_model, output_path, output_type):
         print(f"Average matting time: {avg_time}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("src_path", help="source directory path", type=str)
-    parser.add_argument("bck_path", help="background directory path", type=str)
-    parser.add_argument("output_type", help="choose output types from [composite layer, alpha matte, foreground residual, error map, reference map", nargs='*', choices=['com', 'alp', 'fgr', 'err', 'ref'])
-    parser.add_argument("--pretrained_model", help="pretrained model path", type=str, default="../result/checkpoint/refinenet/checkpoint_epoch0_iter54999.pth")
-    parser.add_argument("--output_path", help="output directory path", type=str, default="../result/images")
-    
-
-    args = parser.parse_args()
-
-    main(args.src_path, args.bck_path, args.pretrained_model, args.output_path, args.output_type)
+    main()

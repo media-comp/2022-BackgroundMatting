@@ -1,0 +1,17 @@
+# @package _global_
+
+# Dataset path setting
+original_work_dir: ${hydra:runtime.cwd}
+
+data_root: ${original_work_dir}/data
+
+rgb_data_dir: ${data_root}/VideoMatte240K_JPEG_SD
+bck_data_dir: ${data_root}/Backgrounds
+
+train_rgb_path: ${rgb_data_dir}/train/fgr
+train_alp_path: ${rgb_data_dir}/train/pha
+valid_rgb_path: ${rgb_data_dir}/test/fgr
+valid_alp_path: ${rgb_data_dir}/test/pha
+
+train_bck_path: ${bck_data_dir}/train
+valid_bck_path: ${bck_data_dir}/test
