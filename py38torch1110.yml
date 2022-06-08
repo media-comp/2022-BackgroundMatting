@@ -32,3 +32,4 @@ dependencies:
   - pip:
     - kornia==0.6.5
     - torch-tb-profiler==0.4.0
+    - hydra-core
