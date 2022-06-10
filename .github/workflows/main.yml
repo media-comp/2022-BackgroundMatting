@@ -27,6 +27,6 @@ jobs:
 
     - name: test image
       run: |
-        python3 train_base.py ../tiny_datasets/train/fgr ../tiny_datasets/backgrounds/train com alp fgr err ref \
+        python3 train_base.py ../tiny_datasets/test/fgr ../tiny_datasets/backgrounds/test com alp fgr err ref \
         --pretrained_model ./checkpoint_epoch0_iter54999.pth
       working-directory: ./app
