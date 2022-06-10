@@ -29,5 +29,5 @@ jobs:
       run: |
         python3 train_base.py --train_rgb_path ../tiny_datasets/train/fgr --train_alp_path ../tiny_datasets/train/pha --train_bck_path ../tiny_datasets/backgrounds/train \
         --valid_rgb_path ../tiny_datasets/test/fgr --valid_alp_path ../tiny_datasets/test/pha --valid_bck_path ../tiny_datasets/backgrounds/test \
-        --pretrained_model 
+        --pretrained_model ./checkpoint_epoch0_iter54999.pth
       working-directory: ./app
