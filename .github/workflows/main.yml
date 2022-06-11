@@ -19,6 +19,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        lfs: 'true'
+      run: git lfs pull
     - uses: conda-incubator/setup-miniconda@v2
       with:
         activate-environment: BackgroundMatting
