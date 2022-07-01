@@ -32,7 +32,8 @@ def main(config):
     model.eval()
 
     #load pretrained model
-    pretrained_state_dict = torch.load(config["pretrained_model"],map_location='cuda:0')
+    pretrained_state_dict = torch.load(config["pretrained_model"],map_location=device)
+    
     matched , total = 0, 0
     original_state_dict = model.state_dict()
     for key in original_state_dict.keys():
