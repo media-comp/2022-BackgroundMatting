@@ -119,3 +119,14 @@ class PairApplyOnlyAtIndices:
     
     def __call__(self, *x):
         return [self.transfoms(x_i) if i in self.indices else x_i for i, x_i in enumerate(x)]
+
+
+import cv2
+
+class random_rotation():
+    def __call__(self, image):
+        rows_x, cols_x, chl_x = image.shape
+        rand_num = np.random.randint(-180, 180)
+        M1 = cv2.getRotationMatrix2D((cols_x / 2, rows_x / 2), rand_num, 1)
+        image = cv2.warpAffine(image, M1, (cols_x, rows_x))
+        return (image)   
