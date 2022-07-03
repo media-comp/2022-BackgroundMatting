@@ -8,7 +8,6 @@ I share anaconda environment yml file.
 Create environment by `conda env create -n $ENV_NAME -f py38torch1110.yml`  
 You can also check requirements from the yml file.
 
-
 ## Usage
 ### Training Base Network
 The Base Network includes ASPP module from DeepLabV3. I used pretrained DeepLabV3 weight([best_deeplabv3_resnet50_voc_os16.pth](https://www.dropbox.com/sh/w3z9z8lqpi8b2w7/AAB0vkl4F5vy6HdIhmRCTKHSa?dl=0)).
