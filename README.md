@@ -14,90 +14,92 @@ You can also check requirements from the yml file.
 The Base Network includes ASPP module from DeepLabV3. I used pretrained DeepLabV3 weight([best_deeplabv3_resnet50_voc_os16.pth](https://www.dropbox.com/sh/w3z9z8lqpi8b2w7/AAB0vkl4F5vy6HdIhmRCTKHSa?dl=0)).
 
 ```
-usage: train_base.py [-h] [--train_rgb_path TRAIN_RGB_PATH] [--train_alp_path TRAIN_ALP_PATH] [--train_bck_path TRAIN_BCK_PATH] [--valid_rgb_path VALID_RGB_PATH] [--valid_alp_path VALID_ALP_PATH]
-                     [--valid_bck_path VALID_BCK_PATH] [--checkpoint_path CHECKPOINT_PATH] [--logging_path LOGGING_PATH] [--batch_size BATCH_SIZE] [--num_workers NUM_WORKERS] [--pretrained_model PRETRAINED_MODEL]
-                     --epochs EPOCHS
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --train_rgb_path TRAIN_RGB_PATH
-                        foreground data directory path for training
-  --train_alp_path TRAIN_ALP_PATH
-                        alpha matte data directory path for training
-  --train_bck_path TRAIN_BCK_PATH
-                        background data directory path for training
-  --valid_rgb_path VALID_RGB_PATH
-                        foreground data directory path for validation
-  --valid_alp_path VALID_ALP_PATH
-                        alpha matte data directory path for validation
-  --valid_bck_path VALID_BCK_PATH
-                        background data directory path for validation
-  --checkpoint_path CHECKPOINT_PATH
-                        checkpoint saving dir path
-  --logging_path LOGGING_PATH
-                        path to save logs
-  --batch_size BATCH_SIZE
-                        batch size
-  --num_workers NUM_WORKERS
-                        num workers
-  --pretrained_model PRETRAINED_MODEL
-                        pretrained model path
-  --epochs EPOCHS       epochs to train
+usage: python train_base.py
 ```
+
+This repo use Hydra for experiment configuration. The configuration file is under `./app/configs`.
+
+For training base network, please set the corrensponding parameters in `./app/configs/train_base.yaml`.
+
+```
+arguments:
+  checkpoint_path       checkpoint saving dir path
+  logging_path          path to save logs
+  batch_size            batch size
+  num_workers           num workers
+  epochs                epochs to train
+  pretrained_model      pretrained model path
+
+  defaults:
+    data                configuration file which handling the dataset path configuration. See below.
+```
+
+For dataset path configuration, please refer to `./app/configs/data/default.yaml`
+
+```
+  original_work_dir     the root directory of the repository
+  data_root             the root directory of the dataset
+
+  rgb_data_dir          the directory of the rgb dataset
+  bck_data_dir          the directory of the background dataset
+
+  train_rgb_path        foreground data directory path for training
+  train_alp_path        alpha matte data directory path for training
+  valid_rgb_path        foreground data directory path for validation
+  valid_alp_path        alpha matte data directory path for validation
+
+  train_bck_path        background data directory path for training
+  valid_bck_path        background data directory path for validation
+
+```
+
 
 ### Training Whole Network (Refinement Network)
-After training the Base Network, train the Base Network and Refinement Network jointly.  
-```
-usage: train_refine.py [-h] [--train_rgb_path TRAIN_RGB_PATH] [--train_alp_path TRAIN_ALP_PATH] [--train_bck_path TRAIN_BCK_PATH] [--valid_rgb_path VALID_RGB_PATH] [--valid_alp_path VALID_ALP_PATH]
-                       [--valid_bck_path VALID_BCK_PATH] [--checkpoint_path CHECKPOINT_PATH] [--logging_path LOGGING_PATH] [--batch_size BATCH_SIZE] [--num_workers NUM_WORKERS] [--pretrained_model PRETRAINED_MODEL]
-                       --epochs EPOCHS
+After training the Base Network, train the Base Network and Refinement Network jointly.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --train_rgb_path TRAIN_RGB_PATH
-                        foreground data directory path for training
-  --train_alp_path TRAIN_ALP_PATH
-                        alpha matte data directory path for training
-  --train_bck_path TRAIN_BCK_PATH
-                        background data directory path for training
-  --valid_rgb_path VALID_RGB_PATH
-                        foreground data directory path for validation
-  --valid_alp_path VALID_ALP_PATH
-                        alpha matte data directory path for validation
-  --valid_bck_path VALID_BCK_PATH
-                        background data directory path for validation
-  --checkpoint_path CHECKPOINT_PATH
-                        checkpoint saving dir path
-  --logging_path LOGGING_PATH
-                        path to save logs
-  --batch_size BATCH_SIZE
-                        batch size
-  --num_workers NUM_WORKERS
-                        num workers
-  --pretrained_model PRETRAINED_MODEL
-                        pretrained model path
-  --epochs EPOCHS       epochs to train
-  ```
+```
+usage: python train_refine.py
+```
+
+For training refine network, please set the corrensponding parameters in `./app/configs/train_refine.yaml`
+
+```
+arguments:
+  checkpoint_path       checkpoint saving dir path
+  logging_path          path to save logs
+  batch_size            batch size
+  num_workers           num workers
+  epochs                epochs to train
+  pretrained_model      pretrained model path
+
+  defaults:
+    data                configuration file which handling \
+                        the dataset path configuration.   \
+                        Same as base training.
+```
 
 ### Test Image Background Matting
 You can download my trained weight form [here](https://drive.google.com/drive/folders/1UnoNk7fp44PyDsyfdnIc6-wAzNxP9xgn?usp=sharing).  
 Using trained weight, you can test image background matting.  
 Make sure that related image and background data are same order in each directory.
+
 ```
-usage: test_image.py [-h] [--pretrained_model PRETRAINED_MODEL] [--output_path OUTPUT_PATH] src_path bck_path [{com,alp,fgr,err,ref} [{com,alp,fgr,err,ref} ...]]
+usage: python test_image.py
+```
 
-positional arguments:
-  src_path              source directory path
-  bck_path              background directory path
-  {com,alp,fgr,err,ref}
-                        choose output types from [composite layer, alpha matte, foreground residual, error map, reference map
+For tesing the network, please set the corrensponding parameters in `./app/configs/test_image.yaml`
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --pretrained_model PRETRAINED_MODEL
-                        pretrained model path
-  --output_path OUTPUT_PATH
-                        output directory path
+```
+  original_work_dir       the root directory of the repository
+  pretrained_model        pretrained model path
+
+  src_path                source directory path
+  bck_path                background directory path
+  output_path             output directory path
+  output_type             choose output types from
+                          [composite layer, alpha matte,\
+                          foreground residual, error map,\
+                          reference map]
 ```
 
 ## Datasets
