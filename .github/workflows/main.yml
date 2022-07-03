@@ -31,4 +31,4 @@ jobs:
     - name: test image
       run: |
         python3 ./app/test_image.py
-      working-directory: ./
+      working-directory: ../
