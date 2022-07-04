@@ -1,11 +1,23 @@
 import torch.nn as nn
 from torchvision.models.resnet import ResNet, Bottleneck
 
-class ResNet50(ResNet):
-    def __init__(self, in_channels, norm_layer=None):
+resnet_config = {
+    'resnet50': [3, 4, 6, 3],
+    'resnet101': [3, 4, 23, 3],
+    # 'resnet18': [2, 2, 2, 2],
+    # 'resnet34': [3, 4, 6, 3],
+    # 'resnet152': [3, 8, 36, 3],
+}
+
+
+class ResNetBackBone(ResNet):
+    def __init__(self, in_channels, norm_layer=None, name='resnet50'):
+        if name.lower() not in resnet_config:
+            raise ValueError('Name of the backbone resnet must be one of the available architectures')
+
         super().__init__(
             block=Bottleneck,
-            layers=[3, 4, 6, 3],
+            layers=resnet_config[name.lower()],
             replace_stride_with_dilation=[False, False, True],
             norm_layer=norm_layer
         )

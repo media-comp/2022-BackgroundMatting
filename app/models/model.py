@@ -2,16 +2,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models.segmentation.deeplabv3 import ASPP
-from .resnet import ResNet50
+from .resnet import ResNetBackBone
 from .decoder import Decoder
 from .refine import Refine
 
 
 
 class Base(nn.Module):
-    def __init__(self, input_channels: int, output_channels: int):
+    def __init__(self, input_channels: int, output_channels: int, backbone_name: str = 'resnet50'):
         super().__init__()
-        self.backbone = ResNet50(input_channels)
+        self.backbone = ResNetBackBone(input_channels, name=backbone_name)
         self.aspp = ASPP(2048, [3, 6, 9])
         self.decoder = Decoder([input_channels, 64, 256, 512], [256, 128, 64, 48, output_channels])
 
@@ -44,10 +44,10 @@ class Base(nn.Module):
 class BaseNet(Base):
     """
     BaseNet inherits Base.
-    BaseNet consists of Backbone(ResNet50), ASPP from DeepLabV3, Decoder., 
+    BaseNet consists of Backbone(ResNet), ASPP from DeepLabV3, Decoder.,
     """
-    def __init__(self):
-        super().__init__(input_channels=6, output_channels=(1+3+1+32))
+    def __init__(self, backbone_name: str = 'resnet50'):
+        super().__init__(input_channels=6, output_channels=(1+3+1+32), backbone_name=backbone_name)
 
     def forward(self, src, bck):
         x = torch.cat([src, bck], dim=1)
@@ -66,9 +66,9 @@ class WholeNet(BaseNet):
     BaseNet consists of Base Network & Refinement Network.
     """
 
-    def __init__(self, coarse_scale: float = 1/4, k_patches: int = 5000):
+    def __init__(self, coarse_scale: float = 1/4, k_patches: int = 5000, backbone_name: str = 'resnet50'):
         assert coarse_scale <= 1/2
-        super().__init__()
+        super().__init__(backbone_name=backbone_name)
         self.coarse_scale = coarse_scale
         self.refine = Refine(k_patches)
         
