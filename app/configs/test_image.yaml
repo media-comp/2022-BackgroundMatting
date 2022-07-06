@@ -1,8 +1,8 @@
 # Experiment setting
 original_work_dir: ${hydra:runtime.cwd}
-pretrained_model: ${original_work_dir}/data/pretrained/checkpoint_epoch0_iter54999.pth
+pretrained_model: ${original_work_dir}/app/checkpoint_epoch0_iter54999.pth
 
-src_path: ???
-bck_path: ???
-output_path: ${original_work_dir}/output
-output_type: com # 'com', 'alp', 'fgr', 'err', 'ref'
+src_path: ${original_work_dir}/tiny_dataset/test/img
+bck_path: ${original_work_dir}/tiny_dataset/test/bgr
+output_path: ${original_work_dir}/outputs
+output_type: com alp fgr err ref # 'com', 'alp', 'fgr', 'err', 'ref'
