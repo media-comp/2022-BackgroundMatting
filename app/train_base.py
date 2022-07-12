@@ -72,7 +72,7 @@ def main(config):
     #model
     print("setting up model...")
     model = BaseNet().to(device)
-    if config["pretrained_model"] is not None:
+    if config["pretrained_model"] != '':
         model.load_deeplabv3_pretrained_state_dict(torch.load(config["pretrained_model"])['model_state'])
 
     #optimizer
