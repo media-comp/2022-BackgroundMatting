@@ -19,16 +19,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        lfs: 'true'
-    - run: git lfs pull
     - uses: conda-incubator/setup-miniconda@v2
       with:
         activate-environment: BackgroundMatting
         environment-file: py38torch1110.yml
         python-version: 3.8
 
-    - name: test image
+    - name: train base
       run: |
-        python3 ./app/test_image.py
+        python3 ./app/train_base.py pretrained_model=None train_rgb_path="../tiny_dataset/train/fgr" train_alp_path="../tiny_dataset/train/pha" valid_rgb_path="../tiny_dataset/valid/fgr" valid_alp_path"=../tiny_dataset/valid/pha" train_bck_path="../tiny_dataset/background/train" valid_bck_path="../tiny_dataset/background/test"
       working-directory: ./

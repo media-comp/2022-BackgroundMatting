@@ -1,0 +1,26 @@
+# Experiment setting
+
+checkpoint_path: ${original_work_dir}/result/checkpoint/basenet
+
+logging_path: ${original_work_dir}/logs/basenet
+
+batch_size: 2
+num_workers: 2
+epochs: 10
+pretrained_model: None
+
+# Dataset path setting
+original_work_dir: ${hydra:runtime.cwd}
+
+data_root: ${original_work_dir}/tiny_dataset
+
+rgb_data_dir: ${data_root}
+bck_data_dir: ${data_root}/backgrounds
+
+train_rgb_path: ${rgb_data_dir}/train/fgr
+train_alp_path: ${rgb_data_dir}/train/pha
+valid_rgb_path: ${rgb_data_dir}/test/fgr
+valid_alp_path: ${rgb_data_dir}/test/pha
+
+train_bck_path: ${bck_data_dir}/train
+valid_bck_path: ${bck_data_dir}/test

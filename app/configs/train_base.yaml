@@ -7,7 +7,7 @@ logging_path: ${original_work_dir}/logs/basenet
 batch_size: 2
 num_workers: 2
 epochs: 10
-pretrained_model: None #${original_work_dir}/data/pretrained/best_deeplabv3_resnet50_voc_os16.pth
+pretrained_model: ${original_work_dir}/data/pretrained/best_deeplabv3_resnet50_voc_os16.pth
 
 defaults:
   - data: default.yaml
